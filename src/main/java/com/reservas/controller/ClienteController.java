@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,11 +17,11 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
-    @GetMapping("/")
+    @GetMapping("/listar")
     public ResponseEntity<List<Cliente>> listarClientes() {
         return ResponseEntity.ok(clienteService.listarClientes());
     }
-    @GetMapping("/{id}")
+    @GetMapping("/mostrar/{id}")
     public ResponseEntity<Cliente> buscarClientePorId(@PathVariable Long id) {
         try{
             return ResponseEntity.ok(clienteService.buscarClientePorId(id));
@@ -32,8 +33,8 @@ public class ClienteController {
 
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Cliente> crearCliente(@RequestBody Cliente cliente) {
+    @PostMapping("/crear")
+    public ResponseEntity<Cliente> crearCliente( @RequestBody @Valid Cliente cliente) {
         try {
             Cliente clienteCreado = clienteService.crearCliente(cliente);
             return ResponseEntity.ok(clienteCreado);
@@ -42,8 +43,8 @@ public class ClienteController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Cliente> editarCliente(@PathVariable Long id, @RequestBody Cliente cliente) {
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Cliente> editarCliente(@PathVariable Long id, @RequestBody @Valid Cliente cliente) {
         try {
             Cliente clienteExistente = clienteService.buscarClientePorId(id);
 
@@ -70,7 +71,7 @@ public class ClienteController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Cliente> eliminarCliente(@PathVariable Long id) {
 
         try {
@@ -82,7 +83,6 @@ public class ClienteController {
             return ResponseEntity.notFound().build();
         }
     }
-
 
 
 }

@@ -1,9 +1,21 @@
 package com.reservas.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.util.Date;
 import java.util.List;
 
+import javax.persistence.*;
+import javax.validation.constraints.*;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Cliente {
 
@@ -11,79 +23,37 @@ public class Cliente {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 100,nullable = false)
+    @NotBlank(message = "Debe ingresar en nombre completo" )
+    @Size(min = 5, max = 50,message = "Mínimo 5 caracteres y máximo 50")
+    @Column(name = "name")
     private String nombre_completo;
 
 
-    @Column(name = "phone",length = 100,nullable = false)
+    @NotBlank(message = "El teléfono es obligatorio")
+    @Pattern(regexp = "^[0-9]{10}$", message = "Son 10 dítigos")
+    @Column(name = "phone")
     private String telefono;
 
-    @Column(name = "email",length = 100,nullable = false)
+    @NotNull
+    @Email(message = "Correo inválido o existente")
+    @Column(name = "email",unique = true)
     private String correo;
 
-    @Column(name = "comment",length = 255,nullable = false)
+    @Size(max = 100, message = "El comentario no puede exceder los 100 caracteres")
+    @Column(name = "comment")
     private String comentario;
-    
-     
-    @OneToMany(mappedBy = "cliente",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+
+	@CreationTimestamp
+	@Column(name = "created_at", updatable = false)
+	private Date created;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at",updatable = true)
+	private Date updated;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "cliente")
     private List<Reserva> reserva;
 
 
-    public Cliente() {
-    }
-    public Cliente(Long id, String nombre_completo, String telefono, String correo, String comentario) {
-        this.id = id;
-        this.nombre_completo = nombre_completo;
-        this.telefono = telefono;
-        this.correo = correo;
-        this.comentario = comentario;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getNombre_completo() {
-        return nombre_completo;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public String getComentario() {
-        return comentario;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNombre_completo(String nombre_completo) {
-        this.nombre_completo = nombre_completo;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public void setComentario(String comentario) {
-        this.comentario = comentario;
-    }
-
-    @Override
-    public String toString() {
-        return ("Telefono " + this.getTelefono() +
-                "email "  +
-                this.getCorreo()
-                + "comentario " + this.getComentario() +
-                "Nomre " + this.getComentario());    }
 }

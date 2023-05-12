@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.reservas.model.Mesa;
 import com.reservas.service.MesaService;
 
+import javax.validation.Valid;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/mesa")
@@ -26,11 +28,11 @@ public class MesaController {
 	@Autowired
     private MesaService mesaService;
 
-    @GetMapping("/")
+    @GetMapping("/listar")
     public ResponseEntity<List<Mesa>> listarMesa() {
         return ResponseEntity.ok(mesaService.listarMesas());
     }
-    @GetMapping("/{id}")
+    @GetMapping("/mostrar/{id}")
     public ResponseEntity<Mesa> buscarMesaPorId(@PathVariable Long id) {
         try{
             return ResponseEntity.ok(mesaService.buscarMesaPorId(id));
@@ -42,8 +44,8 @@ public class MesaController {
 
     }
 
-    @PostMapping("/")
-    public ResponseEntity<Mesa> crearMesa(@RequestBody Mesa mesa) {
+    @PostMapping("/crear")
+    public ResponseEntity<Mesa> crearMesa(@RequestBody @Valid Mesa mesa) {
         try {
             Mesa mesaCreada = mesaService.crearMesa(mesa);
             return ResponseEntity.ok(mesaCreada);
@@ -52,11 +54,11 @@ public class MesaController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Mesa> editarMesa(@PathVariable Long id, @RequestBody Mesa mesa) {
+    @PutMapping("/editar/{id}")
+    public ResponseEntity<Mesa> editarMesa(@PathVariable Long id, @RequestBody @Valid Mesa mesa) {
         try {
             Mesa mesaExistente = mesaService.buscarMesaPorId(id);
-            System.out.println(mesaExistente);
+            System.out.println(mesaExistente.getNombre_completo());
             if (mesa.getNombre_completo()!= null &&!mesa.getNombre_completo().isEmpty())
                 mesaExistente.setNombre_completo(mesa.getNombre_completo());
 
@@ -66,7 +68,7 @@ public class MesaController {
             if (mesa.getUbicacion()!= null &&!mesa.getUbicacion().isEmpty())
             mesaExistente.setUbicacion(mesa.getUbicacion());
 
-            if (mesa.getCapacidad()!= null &&!mesa.getCapacidad().isEmpty())
+            if (mesa.getCapacidad() > 0 && mesa.getCapacidad() < 100)
             mesaExistente.setCapacidad(mesa.getCapacidad());
 
 
@@ -80,7 +82,7 @@ public class MesaController {
     }
 
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/eliminar/{id}")
     public ResponseEntity<Mesa> eliminarCliente(@PathVariable Long id) {
 
         try {

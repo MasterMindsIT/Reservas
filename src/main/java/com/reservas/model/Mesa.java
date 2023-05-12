@@ -1,6 +1,20 @@
 package com.reservas.model;
-import jakarta.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.util.Date;
+import java.util.List;
+import javax.persistence.*;
+import javax.validation.constraints.*;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 public class Mesa {
 
@@ -8,74 +22,40 @@ public class Mesa {
 	    @GeneratedValue(strategy = GenerationType.IDENTITY)
 	    private Long id;
 
-	    @Column(name = "name", length = 100,nullable = false)
+		@NotBlank(message = "Debe ingresar en nombre completo" )
+		@Size(min = 2, max = 20,message = "Mínimo 5 caracteres y máximo 50")
+	    @Column(name = "name",unique = true)
 	    private String nombre_completo;
 
 
-	    @Column(name = "capacidad",length = 100,nullable = false)
-	    private String capacidad;
+		//@NotBlank(message = "El teléfono es obligatorio")
+		@NotNull(message = "La capacidad no puede ser nula")
+		@Min(1)
+		@Max(10)
+		//@Size(min = 1, max =2,message = "Número entre 1 y 99")
+		//@Pattern(regexp = "^[0-9]{1,2}$", message = "Solo númeeros")
+	    @Column(name = "capacidad",nullable = false)
+	    private int capacidad;
 
+		@NotBlank(message = "El teléfono es obligatorio")
+		@Size(min = 3, max = 50,message = "Mínimo 3 caracteres y máximo 50")
 	    @Column(name = "location",length = 100,nullable = false)
 	    private String ubicacion;
 
-	    @Column(name = "comment",length = 255,nullable = false)
+		@Size(min = 3, max = 50,message = "Mínimo 3 caracteres y máximo 50")
+	    @Column(name = "comment",length = 255,nullable = true)
 	    private String comentario;
-	
-	    @ManyToOne(fetch = FetchType.EAGER)
-	    private Reserva reserva;
 
+		@CreationTimestamp
+		@Column(name = "created_at", updatable = false)
+		private Date created;
 
-	    public Mesa() {
-	    }
-	    public Mesa(Long id, String nombre_completo, String capacidad, String ubicacion, String comentario) {
-	        this.id = id;
-	        this.nombre_completo = nombre_completo;
-	        this.capacidad = capacidad;
-	        this.ubicacion = ubicacion;
-	        this.comentario = comentario;
-	    }
+		@UpdateTimestamp
+		@Column(name = "updated_at",updatable = true)
+		private Date updated;
 
-	   
-	    
-	    public Long getId() {
-			return id;
-		}
-	    public String getNombre_completo() {
-			return nombre_completo;
-		}
-	    
-	    public String getCapacidad() {
-			return capacidad;
-		}
-	    public String getUbicacion() {
-			return ubicacion;
-		}
-	    public String getComentario() {
-			return comentario;
-		}
+		@JsonIgnore
+	    @OneToMany(mappedBy = "mesa")
+	    private List<Reserva> reserva;
 
-	    public void setId(Long id) {
-			this.id = id;
-		}
-		public void setNombre_completo(String nombre_completo) {
-			this.nombre_completo = nombre_completo;
-		}		
-		public void setCapacidad(String capacidad) {
-			this.capacidad = capacidad;
-		}
-		public void setUbicacion(String ubicacion) {
-			this.ubicacion = ubicacion;
-		}
-		public void setComentario(String comentario) {
-			this.comentario = comentario;
-		}
-		
-		@Override
-	    public String toString() {
-	        return ("Capacidad: " + this.getCapacidad() +
-	        		"ubicacion: "  + this.getUbicacion() + 
-	        		"comentario: " + this.getComentario() +  
-	        		"Nombre: " + this.getNombre_completo());   
-	        }
-	
 }

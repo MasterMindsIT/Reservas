@@ -1,11 +1,10 @@
 package com.reservas.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.reservas.model.Mesa;
 import com.reservas.model.Reserva;
 import com.reservas.repository.IReservaRepository;
 
@@ -18,7 +17,9 @@ public class ReservaService {
 	        return reservaRepository.findAll();
 	    }
 
-	    public Reserva buscarReservaPorId(Integer id) {
+	public List<Reserva> listarReservadas(LocalDate fecha) { return reservaRepository.findByFecha(fecha); }
+
+	    public Reserva buscarReservaPorId(Long id) {
 	        return reservaRepository.findById(id).get();
 	    }
 
@@ -30,7 +31,7 @@ public class ReservaService {
 	        return reservaRepository.save(reserva);
 	    }
 
-	    public void eliminarReserva(Integer id) {
+	    public void eliminarReserva(Long id) {
 
 	        reservaRepository.deleteById(id);
 
